@@ -36,7 +36,8 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
 
 ## TESTS
 1. Fail Over with only one PE attached to WE region
-2. Fail Over with with a WE Network failure
+    a) Fail over the IoT Hub and Check that the clients can continue sending data after a period of transient failure
+3. Fail Over with with a WE Network failure
      - This requires to set the Private DNS records of NE attached to the VNET of the VM.
   
 ## Disaster Recovery Notes
