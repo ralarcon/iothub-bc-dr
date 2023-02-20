@@ -21,10 +21,14 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
 4. Configure the IoT Edge Temperature Sensor Module for the edge101 device
   - To be able to run this configuration you will need to change the NSG Rule `BlockInternetTraffic` from Deny to Allow (to enable download the containers etc.)
   - Configure the Temperature as explained [here](https://learn.microsoft.com/en-us/azure/iot-edge/quickstart-linux?view=iotedge-1.4#deploy-a-module) 
-  - Disable the internet traffic from the VM by changinging the NSG Rule `BlockInternetTraffic` from Allow to Deny
+  - Disable the internet traffic from the VM by changinging the NSG Rule `BlockInternetTraffic` from Allow to Deny.
+  - Restart the iotedge runtime module to reset the connection status: `sudo iotedge system restart` (if not, the module already have the connection established and the traffic is not blocked).
+  - Verify the Temerature Sensor continue sending even the internet connectivity is lost: `sudo iotedge logs SimulatedTemperatureSensor -f`.
+    - You can verify the hub is not receving traffic by executing `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr`
+  - Ensure the Internet traffic is blocked by running the device simulator: `~/iot-device-simulator$ ./run-simulator.sh`. 
 5. Close IoT HUB public access and configure IoT Hub Private Endpoints within the WE & NE VNETS.
-6. Ensure you attach both Private DNS records to the VNET where the VM is deployed
-7. Build & Deploy IoT Device Simulator by running the `build-deploy.sh` script
+  - Ensure you attach both Private DNS records to the VNET where the VM is deployed.
+7. Build & Deploy IoT Device Simulator by running the `build-deploy.sh` script.
 8. Execute the iot-device-simulator
 8
 Build and Deploy the IoT
