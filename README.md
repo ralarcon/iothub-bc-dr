@@ -15,7 +15,23 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
 - React and Control Connectivity Events
 - Retries & Considerations
 
+## Environment Setup
+1. Scripts are designed to run in bash and assume you are logged in to run az cli commands (az login).
+2. Execute the `setup.env.sh` script to create the whole environment
+4. Configure the IoT Edge Temperature Sensor Module for the edge101 device
+  - To be able to run this configuration you will need to change the NSG Rule `BlockInternetTraffic` from Deny to Allow (to enable download the containers etc.)
+  - Configure the Temperature as explained [here](https://learn.microsoft.com/en-us/azure/iot-edge/quickstart-linux?view=iotedge-1.4#deploy-a-module) 
+  - Disable the internet traffic from the VM by changinging the NSG Rule `BlockInternetTraffic` from Allow to Deny
+5. Close IoT HUB public access and configure IoT Hub Private Endpoints within the WE & NE VNETS.
+6. Ensure you attach both Private DNS records to the VNET where the VM is deployed
+7. Build & Deploy IoT Device Simulator by running the `build-deploy.sh` script
+8. Execute the iot-device-simulator
+8
+Build and Deploy the IoT
 
+## TESTS
+1. Fail Over with only one PE attached to WE region
+2. Fail Over with 
 ## Disaster Recovery Notes
 Code in ImportExportIotDevices is a sample. It has been fixed to export the device identities WITH authorization settings as explained here:  
 Specially pay attention to the fact that to export the identities with authentication you need to explicit specify it:
