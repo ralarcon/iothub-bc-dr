@@ -18,24 +18,27 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
 ## Environment Setup
 1. Scripts are designed to run in bash and assume you are logged in to run az cli commands (az login).
 2. Execute the `setup.env.sh` script to create the whole environment
+3. Build & Deploy IoT Device Simulator by running the `build-deploy.sh` script. You will need to introduce the vm password to copy the binaries.
 4. Configure the IoT Edge Temperature Sensor Module for the edge101 device
     - To be able to run this configuration you will need to change the NSG Rule `BlockInternetTraffic` from Deny to Allow (to enable download the containers etc.)
     - Configure the Temperature as explained [here](https://learn.microsoft.com/en-us/azure/iot-edge/quickstart-linux?view=iotedge-1.4#deploy-a-module) 
     - Disable the internet traffic from the VM by changinging the NSG Rule `BlockInternetTraffic` from Allow to Deny.
     - Restart the iotedge runtime module to reset the connection status: `sudo iotedge system restart` (if not, the module already have the connection established and the traffic is not blocked).
     - Verify the Temerature Sensor continue sending even the internet connectivity is lost: `sudo iotedge logs SimulatedTemperatureSensor -f`.
-      - You can verify the hub is not receving traffic by executing `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr`
+        - You can verify the hub is not receving traffic by executing `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr`
+        - WARN - TO BE INVESTIGATED-: THIS POINT IS NOT TRUE, NOT SURE WHY, I EXPECT THE MODULE CAN CONTINUE SENDING TO THE EDGE HUB AND THE EDGE HUB TO STORE THE MESSAGES WHILE NOT CONNECTIVITY
     - Ensure the Internet traffic is blocked by running the device simulator: `~/iot-device-simulator$ ./run-simulator.sh`. 
 5. Close IoT HUB public access and configure IoT Hub Private Endpoints within the WE & NE VNETS.
-  - Ensure you attach both Private DNS records to the VNET where the VM is deployed.
-7. Build & Deploy IoT Device Simulator by running the `build-deploy.sh` script.
-8. Execute the iot-device-simulator
-8
-Build and Deploy the IoT
+    - Ensure you attach the **WE Private DNS records** to the VNET where the VM is deployed.
+    - Now you should have access to the IoT Hub thru the private endopoint.
+6. Execute the iot-device-simulator by running the `~/iot-device-simulator$ ./run-simulator.sh`
+7. Verify the Temperature Sensor Module and IoT Simulated Device are sending data properly (`az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr` ` az iot hub monitor-events --output table -d thermostat1 -n iot-bcdr-hub -g iot-bcdr`)
 
 ## TESTS
 1. Fail Over with only one PE attached to WE region
-2. Fail Over with 
+2. Fail Over with with a WE Network failure
+     - This requires to set the Private DNS records of NE attached to the VNET of the VM.
+  
 ## Disaster Recovery Notes
 Code in ImportExportIotDevices is a sample. It has been fixed to export the device identities WITH authorization settings as explained here:  
 Specially pay attention to the fact that to export the identities with authentication you need to explicit specify it:
