@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ImportExportIotDevices": {
+      "commandName": "Project",
+      "commandLineArgs": "--ExportDevices=true"
+    }
+  }
+}
