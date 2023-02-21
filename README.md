@@ -19,23 +19,21 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
 1. Scripts are designed to run in bash and assume you are logged in to run az cli commands (az login).
 2. Execute the `setup.env.sh` script to create the whole environment
 3. Build & Deploy IoT Device Simulator by running the `build-deploy.sh` script. You will need to introduce the vm password to copy the binaries.
-4. Configure the IoT Edge Temperature Sensor Module for the edge101 device
-    - Consider this optional as it would show an IoT Edge device automatically recovered but be mindful that the SimulatedTemperatureSensor, by default, send 500 messages and stop sending.
-    - To be able to run this configuration you will need to change the NSG Rule `BlockInternetTraffic` from Deny to Allow (to enable download the containers etc.)
-    - Configure the Temperature as explained [here](https://learn.microsoft.com/en-us/azure/iot-edge/quickstart-linux?view=iotedge-1.4#deploy-a-module) 
-    - Disable the internet traffic from the VM by changing the NSG Rule `BlockInternetTraffic` from Allow to Deny.
-    - Restart the iotedge runtime module to reset the connection status: `sudo iotedge system restart` (if not, the module already have the connection established and the traffic is not blocked).
-    - Verify the Temperature Sensor continue sending even the internet connectivity is lost: `sudo iotedge logs SimulatedTemperatureSensor -f`.
-        - You can verify the hub is not receiving traffic by executing `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr`
-        - **WARN** - TO BE INVESTIGATED-: THIS POINT IS NOT TRUE, NOT SURE WHY, I EXPECT THE MODULE CAN CONTINUE SENDING TO THE EDGE HUB AND THE EDGE HUB TO STORE THE MESSAGES WHILE NOT CONNECTIVITY
-        - **Anyway** the module will reconnect after the failover (edgeAgent take care of it). 
-    - Ensure the Internet traffic is blocked by running the device simulator: `~/iot-device-simulator$ ./run-simulator.sh`. 
+4. Ensure the Internet traffic is blocked from the VM by running the device simulator: `~/iot-device-simulator$ ./run-simulator.sh`, it will not be able to connect.
 5. Close IoT HUB public access and configure IoT Hub Private Endpoints within the WE & NE VNETS.
     - Allow access to your IP for managing purposes.
     - Ensure you attach the **WE Private DNS records** to the VNET where the VM is deployed.
     - Now you should have access to the IoT Hub thru the private endpoint.
-6. Execute the iot-device-simulator by running the `~/iot-device-simulator$ ./run-simulator.sh`
-7. Verify the Temperature Sensor Module and IoT Simulated Device are sending data properly (`az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr` ` az iot hub monitor-events --output table -d thermostat1 -n iot-bcdr-hub -g iot-bcdr`)
+6. Execute the iot-device-simulator by running the `~/iot-device-simulator$ ./run-simulator.sh` now it should work thru the PE
+7. Configure the IoT Edge Temperature Sensor Module for the edge101 device using the ACR deployed with the environment
+    - Enable the Private Endpoint to the ACR
+    - Ensure the Pivate DNS is linked to the VM VNET/SBNET to enable the resolution
+    - Configure the TemperatureSensorModule pointing to the image in the environemnt ACR, for example `iotacrbcdr.azurecr.io/azureiotedge-simulated-temperature-sensor:latest`
+    - Verify the Temperature Sensor is able to send lost: `sudo iotedge logs SimulatedTemperatureSensor -f`.
+        - You can verify the hub is not receiving traffic by executing `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr`
+        - **WARN** - TO BE INVESTIGATED-: THIS POINT IS NOT TRUE, NOT SURE WHY, I EXPECT THE MODULE CAN CONTINUE SENDING TO THE EDGE HUB AND THE EDGE HUB TO STORE THE MESSAGES WHILE NOT CONNECTIVITY
+        - **Anyway** the module will reconnect after the failover (edgeAgent take care of it). 
+8. OPTIONAL: Verify the Temperature Sensor Module and IoT Simulated Device are sending data properly and the IoT Hub is receiving it (from your computer you can run `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr` ` az iot hub monitor-events --output table -d thermostat1 -n iot-bcdr-hub -g iot-bcdr`)
 
 ## TESTS
 1. Fail Over with only one PE attached to WE region
