@@ -9,6 +9,7 @@ export SUFIX=bcdr
 export RSG=iot-$SUFIX
 export RSG_NE=iot-$SUFIX-ne
 export HUB=iot-$SUFIX-hub
+export ACR=iotacr$SUFIX
 export VNET_WE=iot-$SUFIX-vnet-we
 export VNET_NE=iot-$SUFIX-vnet-ne
 export VM_NAME='edgevm-'$SUFIX
@@ -26,6 +27,7 @@ echo "Creating resource group $RSG"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 ## CREATE RESOURCE GRUOP
 az group create --name $RSG --location westeurope
+az group create --name $RSG_NE --location westeurope
 
 echo "Creating IoT Hub $HUB"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
@@ -78,8 +80,9 @@ az network vnet create --resource-group $RSG_NE --name $VNET_NE --address-prefix
  
 echo "Configuring VNET peering"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+VNET_NE_ID=$(az network vnet show -g $RSG_NE -n $VNET_NE --query id -o tsv)
 az network vnet peering create --name vnet-onprem-to-vnet-we --resource-group $RSG --vnet-name $VNET_VM --remote-vnet $VNET_WE --allow-vnet-access
-az network vnet peering create --name vnet-onprem-to-vnet-ne --resource-group $RSG --vnet-name $VNET_VM --remote-vnet $VNET_NE --allow-vnet-access
+az network vnet peering create --name vnet-onprem-to-vnet-ne --resource-group $RSG --vnet-name $VNET_VM --remote-vnet $VNET_NE  --remote-vnet $VNET_NE_ID --allow-vnet-access
 
 
 echo "Configuring Storage Account"
@@ -87,10 +90,14 @@ echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 ## SETUP STORAGE ACCOUNT
 az storage account create --name iotstg$SUFIX --resource-group $RSG --location westeurope --sku Standard_LRS --kind StorageV2
 
+az acr create --resource-group $RSG --name $ACR --sku Premium --admin-enabled true
+az acr import --resource-group $RSG --name $ACR --source mcr.microsoft.com/azureiotedge-simulated-temperature-sensor:latest --image azureiotedge-simulated-temperature-sensor:latest
+
 ## MANUAL ACTIONS
 # - ENABLE PRIVATE LINK FOR WE
 # Ref: https://learn.microsoft.com/en-us/azure/iot-hub/iot-hub-public-network-access
 
 echo "To connect to the VM run: ssh -p 2223 azureUser@$VM_NAME.westeurope.cloudapp.azure.com password: vmPass#word"
 echo "You will need to MANUALLY create the private endpoints in the WE VNET (and NE when required) for the IoT Hub"
+echo "ALSO you need to create the PE for the ACR"
 echo "You will need to configure the IoT Edge device (edge101) to deploy the TemperatureSensorModule from the market place"

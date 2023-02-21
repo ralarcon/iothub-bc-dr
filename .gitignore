@@ -32,7 +32,7 @@ bld/
 [Ll]ogs/
 
 # build-deploy.sh results
-./IotDevicesSimulator/output/
+IotDeviceSimulator/output/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
