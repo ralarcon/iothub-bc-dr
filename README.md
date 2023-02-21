@@ -37,9 +37,9 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
 
 ## TESTS
 1. Fail Over with only one PE attached to WE region
-    a) Fail Over the IoT Hub and Check that the clients can continue sending data after a period of transient failure. 
-    b) The IotDeviceSimulator, which is also suscribed to the EventHubsCompatible endpoint will need an updated PE configuration to continue working. The IoTDeviceSimulator automatically resolves the EventHubs compatible endpoint connection string thru the class `IoTHubConnection`.
-    c) After the Fail Over, the EventHubs compatible endpoint is changed. If a client is using this compatible endpoint thru PE (which is our case), then it needs to be reconfigured to point to the new EH Compatible Endpoint, this will require to **RE-CREATE** the PE (remove and recreate).
+    - Fail Over the IoT Hub and Check that the clients can continue sending data after a period of transient failure. 
+    - The IotDeviceSimulator, which is also suscribed to the EventHubsCompatible endpoint will need an updated PE configuration to continue working. The IoTDeviceSimulator automatically resolves the EventHubs compatible endpoint connection string thru the class `IoTHubConnection`.
+    - After the Fail Over, the EventHubs compatible endpoint is changed. If a client is using this compatible endpoint thru PE (which is our case), then it needs to be reconfigured to point to the new EH Compatible Endpoint, this will require to **RE-CREATE** the PE (remove and recreate).
         - **OPPORTUNITY**: Fail over doc does not mention anything regarding private link / private endpoint -> this would be an interesting topic if there are customer that are using the EH compatible endpoint thru a PE. The scenario of having devices connected to the compatible endpoint is not so common.
 2. Fail Over from WE to NE with Network failure
      - This requires DNS configuration to use the NE VNET. So:
