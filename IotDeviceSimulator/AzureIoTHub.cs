@@ -68,7 +68,8 @@ using System.Threading.Tasks;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"{DateTime.Now} > Error sending message: {ex}");
+                    Console.WriteLine($"{DateTime.Now} > Error sending message: {ex.GetType().ToString()}::{ex.Message}. Retrying after 5 seconds...");
+                    Task.Delay(5000);
                 }
             }
         }
@@ -124,7 +125,7 @@ using System.Threading.Tasks;
                 } 
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"{DateTime.Now} > Error reading event: {ex}. Retrying after 1 second...");
+                    Console.WriteLine($"{DateTime.Now} > Error reading event: {ex.Message}. Retrying after 1 second...");
                     Task.Delay(1000);
                 }
             }

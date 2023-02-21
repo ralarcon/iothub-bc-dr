@@ -7,6 +7,7 @@
 
 export SUFIX=bcdr
 export RSG=iot-$SUFIX
+export RSG_NE=iot-$SUFIX-ne
 export HUB=iot-$SUFIX-hub
 export VNET_WE=iot-$SUFIX-vnet-we
 export VNET_NE=iot-$SUFIX-vnet-ne
@@ -15,6 +16,7 @@ export VM_NAME='edgevm-'$SUFIX
 echo "Preparing testing environment for BC/DR demo."
 echo "SUFIX=$SUFIX"
 echo "RSG=$RSG"
+echo "RSG_NE=$RSG_NE"
 echo "HUB=$HUB"
 echo "VNET_WE=$VNET_WE"
 echo "VNET_NE=$VNET_NE"
@@ -72,27 +74,23 @@ echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 ## SETUP VNETS
 VNET_VM=$(az network vnet list -g $RSG --query "[].name" -o tsv)
 az network vnet create --resource-group $RSG --name $VNET_WE --address-prefix 10.1.0.0/16 --subnet-name default --subnet-prefix 10.1.0.0/24 --location westeurope
-az network vnet create --resource-group $RSG --name $VNET_NE --address-prefix 10.2.0.0/16 --subnet-name default --subnet-prefix 10.2.0.0/24 --location northeurope
+az network vnet create --resource-group $RSG_NE --name $VNET_NE --address-prefix 10.2.0.0/16 --subnet-name default --subnet-prefix 10.2.0.0/24 --location northeurope
  
 echo "Configuring VNET peering"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-az network vnet peering create --name vnet-we-to-vnet-onprem --resource-group $RSG --vnet-name $VNET_VM --remote-vnet $VNET_WE --allow-vnet-access
-az network vnet peering create --name vnet-ne-to-vnet-onprem --resource-group $RSG --vnet-name $VNET_VM --remote-vnet $VNET_NE --allow-vnet-access
+az network vnet peering create --name vnet-onprem-to-vnet-we --resource-group $RSG --vnet-name $VNET_VM --remote-vnet $VNET_WE --allow-vnet-access
+az network vnet peering create --name vnet-onprem-to-vnet-ne --resource-group $RSG --vnet-name $VNET_VM --remote-vnet $VNET_NE --allow-vnet-access
 
-# SNET_VM=$(az network vnet subnet list -g $RSG --vnet-name $VNET_VM --query "[].name" -o tsv)
-# az network vnet subnet update --vnet-name $VNET_VM --name $SNET_VM --network-security-group $NSG_NAME --resource-group $RSG
 
-echo "Configuring VNET peering"
+echo "Configuring Storage Account"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 ## SETUP STORAGE ACCOUNT
 az storage account create --name iotstg$SUFIX --resource-group $RSG --location westeurope --sku Standard_LRS --kind StorageV2
 
 ## MANUAL ACTIONS
 # - ENABLE PRIVATE LINK FOR WE
-# - ENABLE PRIVATE LINK FOR NE
-# - ADD FILTERS IN IOT HUB FOR WE AND NE
 # Ref: https://learn.microsoft.com/en-us/azure/iot-hub/iot-hub-public-network-access
 
 echo "To connect to the VM run: ssh -p 2223 azureUser@$VM_NAME.westeurope.cloudapp.azure.com password: vmPass#word"
-echo "You will need to MANUALLY create the private endpoints in the WE and NE VNETs for the IoT Hub"
+echo "You will need to MANUALLY create the private endpoints in the WE VNET (and NE when required) for the IoT Hub"
 echo "You will need to configure the IoT Edge device (edge101) to deploy the TemperatureSensorModule from the market place"
