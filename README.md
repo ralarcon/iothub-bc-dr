@@ -42,7 +42,7 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
     - The IotDeviceSimulator, which is also suscribed to the EventHubsCompatible endpoint will need an updated PE configuration to continue working. The IoTDeviceSimulator automatically resolves the EventHubs compatible endpoint connection string thru the class `IoTHubConnection`.
     - After the Fail Over, the EventHubs compatible endpoint is changed. If a client is using this compatible endpoint thru PE (which is our case), then it needs to be reconfigured to point to the new EH Compatible Endpoint, this will require to **RE-CREATE** the PE (remove and recreate).
         - **OPPORTUNITY**: Fail over doc does not mention anything regarding private link / private endpoint -> this would be an interesting topic if there are customer that are using the EH compatible endpoint thru a PE. The scenario of having devices connected to the compatible endpoint is not so common.
-    - Tests result done with a couple of devices (few minutes after requesting the Fail Over):
+    - Time tracking of a FailOver with a couple of devices (few minutes after requesting the Fail Over):
         - 14:03 -> Simulated Device stops sending and stop receiving, errors appear (retry in place). Edge TempSensor also stop sending
         - 14:11 -> Simulated Device sends againg. Recive is broken (as per the EH Endpoint change). Edge takes a bit more due to the edgeAgent retries to re-start the module. 
         - 14:13 -> Remove PE from the IoT Hub, remove Nic + Private Link resources.
