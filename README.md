@@ -29,6 +29,7 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
         - **WARN** - TO BE INVESTIGATED-: THIS POINT IS NOT TRUE, NOT SURE WHY, I EXPECT THE MODULE CAN CONTINUE SENDING TO THE EDGE HUB AND THE EDGE HUB TO STORE THE MESSAGES WHILE NOT CONNECTIVITY
     - Ensure the Internet traffic is blocked by running the device simulator: `~/iot-device-simulator$ ./run-simulator.sh`. 
 5. Close IoT HUB public access and configure IoT Hub Private Endpoints within the WE & NE VNETS.
+    - Allow access to your IP for managing purposes.
     - Ensure you attach the **WE Private DNS records** to the VNET where the VM is deployed.
     - Now you should have access to the IoT Hub thru the private endopoint.
 6. Execute the iot-device-simulator by running the `~/iot-device-simulator$ ./run-simulator.sh`
