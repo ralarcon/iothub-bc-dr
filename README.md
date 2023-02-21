@@ -29,6 +29,7 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
     - Enable the Private Endpoint to the ACR
     - Ensure the Pivate DNS is linked to the VM VNET/SBNET to enable the resolution
     - Configure the TemperatureSensorModule pointing to the image in the environemnt ACR, for example `iotacrbcdr.azurecr.io/azureiotedge-simulated-temperature-sensor:latest`
+    - You can add a "MessageCount" environment variable with -1 as value (no stop sending) or an ammount of messages to be sent high to allow the proper testing (i.e. 5000)
     - Verify the Temperature Sensor is able to send lost: `sudo iotedge logs SimulatedTemperatureSensor -f`.
         - You can verify the hub is not receiving traffic by executing `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr`
         - **WARN** - TO BE INVESTIGATED-: THIS POINT IS NOT TRUE, NOT SURE WHY, I EXPECT THE MODULE CAN CONTINUE SENDING TO THE EDGE HUB AND THE EDGE HUB TO STORE THE MESSAGES WHILE NOT CONNECTIVITY
