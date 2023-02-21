@@ -20,7 +20,7 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
 2. Execute the `setup.env.sh` script to create the whole environment
 3. Build & Deploy IoT Device Simulator by running the `build-deploy.sh` script. You will need to introduce the vm password to copy the binaries.
 4. Ensure the Internet traffic is blocked from the VM by running the device simulator: `~/iot-device-simulator$ ./run-simulator.sh`, it will not be able to connect.
-5. Close IoT HUB public access and configure IoT Hub Private Endpoints within the WE & NE VNETS.
+5. Close IoT HUB public access and configure IoT Hub Private Endpoints within the WE VNET.
     - Allow access to your IP for managing purposes.
     - Ensure you attach the **WE Private DNS records** to the VNET where the VM is deployed.
     - Now you should have access to the IoT Hub thru the private endpoint.
