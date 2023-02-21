@@ -26,7 +26,7 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
     - Restart the iotedge runtime module to reset the connection status: `sudo iotedge system restart` (if not, the module already have the connection established and the traffic is not blocked).
     - Verify the Temerature Sensor continue sending even the internet connectivity is lost: `sudo iotedge logs SimulatedTemperatureSensor -f`.
         - You can verify the hub is not receving traffic by executing `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr`
-        - WARN - TO BE INVESTIGATED-: THIS POINT IS NOT TRUE, NOT SURE WHY, I EXPECT THE MODULE CAN CONTINUE SENDING TO THE EDGE HUB AND THE EDGE HUB TO STORE THE MESSAGES WHILE NOT CONNECTIVITY
+        - **WARN** - TO BE INVESTIGATED-: THIS POINT IS NOT TRUE, NOT SURE WHY, I EXPECT THE MODULE CAN CONTINUE SENDING TO THE EDGE HUB AND THE EDGE HUB TO STORE THE MESSAGES WHILE NOT CONNECTIVITY
     - Ensure the Internet traffic is blocked by running the device simulator: `~/iot-device-simulator$ ./run-simulator.sh`. 
 5. Close IoT HUB public access and configure IoT Hub Private Endpoints within the WE & NE VNETS.
     - Ensure you attach the **WE Private DNS records** to the VNET where the VM is deployed.
@@ -36,7 +36,7 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
 
 ## TESTS
 1. Fail Over with only one PE attached to WE region
-    a) Fail over the IoT Hub and Check that the clients can continue sending data after a period of transient failure
+    a) Fail over the IoT Hub and Check that the clients can continue sending data after a period of transient failure. **WARN** It works, the only thing is that the IotDeviceSimulator, which is sending data and suscribed to the EventHubsCompatible endpoint is not able to resolve the new connection string.... under investigation. 
 3. Fail Over with with a WE Network failure
      - This requires to set the Private DNS records of NE attached to the VNET of the VM.
   
@@ -69,3 +69,7 @@ Export & Import
 >[..] iothub-bc-dr/ImportExportIotDevices$ . env.vars.sh
 >[..] iothub-bc-dr/ImportExportIotDevices$ dotnet run --CopyDevices=true --IncludeConfigurations=true
 ```
+## Remarks
+Be mindful this content is "under development" & "quick and dirty". 
+TODO: Generate a VM pass dynamically. Now is defined in the script. Not an issue as this are transient environments.
+WARN: The shell scripts use the environment variable export `SUFIX=bcdr` to create the resources. If you change it in one of the scripts, change it in all (`setup.env.sh build-deploy.sh and ./IotDeviceSimulator/env.vars.sh`)
