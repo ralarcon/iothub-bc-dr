@@ -24,7 +24,7 @@ static async Task SimulateDeviceToSendD2cAndReceiveD2c()
     {
         e.Cancel = true;
         tokenSource.Cancel();
-        Console.WriteLine("Exiting...");
+        Console.WriteLine($"{DateTime.Now} > Send and receive cancelled. Exiting...");
     };
     Console.WriteLine("Press CTRL+C to exit");
 

@@ -68,7 +68,7 @@ using System.Threading.Tasks;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error sending message: {ex}");
+                    Console.WriteLine($"{DateTime.Now} > Error sending message: {ex}");
                 }
             }
         }
@@ -95,25 +95,38 @@ using System.Threading.Tasks;
 
         public static async Task ReceiveMessagesFromDeviceAsync(CancellationToken cancelToken)
         {
-            try
+            while (!cancelToken.IsCancellationRequested)
             {
-                string eventHubConnectionString = await IotHubConnection.GetEventHubsConnectionStringAsync(iotHubConnectionString);
-                await using var consumerClient = new EventHubConsumerClient(
-                    EventHubConsumerClient.DefaultConsumerGroupName,
-                    eventHubConnectionString);
-
-                await foreach (PartitionEvent partitionEvent in consumerClient.ReadEventsAsync(cancelToken))
+                try
                 {
-                    if (partitionEvent.Data == null) continue;
+                    string eventHubConnectionString = await IotHubConnection.GetEventHubsConnectionStringAsync(iotHubConnectionString);
+                    await using var consumerClient = new EventHubConsumerClient(
+                        EventHubConsumerClient.DefaultConsumerGroupName,
+                        eventHubConnectionString);
 
-                    string data = Encoding.UTF8.GetString(partitionEvent.Data.Body.ToArray());
-                    Console.WriteLine($"Message received. Partition: {partitionEvent.Partition.PartitionId} Data: '{data}'");
+                    await foreach (PartitionEvent partitionEvent in consumerClient.ReadEventsAsync(cancelToken))
+                    {
+                        if (partitionEvent.Data == null) continue;
+
+                        string data = Encoding.UTF8.GetString(partitionEvent.Data.Body.ToArray());
+                        Console.WriteLine($"Message received. Partition: {partitionEvent.Partition.PartitionId} Data: '{data}'");
+                    }
                 }
-            }
-            catch (TaskCanceledException) { } // do nothing
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error reading event: {ex}");
+                catch (TimeoutException)
+                {
+                    Console.WriteLine($"{DateTime.Now} > Timeout receiving or connecting to Event Hub. Retrying after 1 second...");
+                    await Task.Delay(1000);
+                }
+                catch (TaskCanceledException) 
+                {
+                    Console.WriteLine($"{DateTime.Now} > Receive events cancelled. Exiting..."); 
+                    break; 
+                } 
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"{DateTime.Now} > Error reading event: {ex}. Retrying after 1 second...");
+                    Task.Delay(1000);
+                }
             }
         }
     }
