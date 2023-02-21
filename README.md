@@ -37,14 +37,18 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
 
 ## TESTS
 1. Fail Over with only one PE attached to WE region
-    a) Fail Over the IoT Hub and Check that the clients can continue sending data after a period of transient failure. The IotDeviceSimulator, which is also suscribed to the EventHubsCompatible endpoint will need an updated PE configuration to continue working. The IoTDeviceSimulator automatically resolves the EventHubs compatible endpoint connection string thru the class `IoTHubConnection`.
-    c) After the Fail Over, the EventHubs compatible endpoint is changed. If a client is using this compatible endpoint thru PE (which is our case), then it needs to be reconfigured to point to the new EH Compatible Endpoint:
-        1. Edit the Private DNS Record to remove the previous host and add the new one (for example: iothub-ns-iot-bcdr-h-24647449-0170c4e46b) 
-        2. Edit the PE and remove the `privatelink-servicebus-windows-net` configuration.
-        3. Now add a new configuration for the `privatelink-servicebus-windows-net`
-    d) Initially, the IoTHubClient is designed to retry undefinedly. 
-3. Fail Over with a WE Network failure
-     - This requires setting the Private DNS records of NE attached to the VNET of the VM.
+    a) Fail Over the IoT Hub and Check that the clients can continue sending data after a period of transient failure. 
+    b) The IotDeviceSimulator, which is also suscribed to the EventHubsCompatible endpoint will need an updated PE configuration to continue working. The IoTDeviceSimulator automatically resolves the EventHubs compatible endpoint connection string thru the class `IoTHubConnection`.
+    c) After the Fail Over, the EventHubs compatible endpoint is changed. If a client is using this compatible endpoint thru PE (which is our case), then it needs to be reconfigured to point to the new EH Compatible Endpoint, this will require to **RE-CREATE** the PE (remove and recreate).
+        - **OPPORTUNITY**: Fail over doc does not mention anything regarding private link / private endpoint -> this would be an interesting topic if there are customer that are using the EH compatible endpoint thru a PE. The scenario of having devices connected to the compatible endpoint is not so common.
+2. Fail Over from WE to NE with Network failure
+     - This requires DNS configuration to use the NE VNET. So:
+     - Fail over from WE to NE
+     - Remove the WE PE when possible
+     - Create the NE PE when possible
+     - Remove the Private DNS records from the VM VNET/SNET
+     - Attach the Private DNS records for the NE PE to the VM VNET/SNET 
+
   
 ## Disaster Recovery Notes
 Code in ImportExportIotDevices is a sample. It has been fixed to export the device identities WITH authorization settings as explained here:  
