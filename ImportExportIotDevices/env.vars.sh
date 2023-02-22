@@ -4,9 +4,10 @@
 ## MAKE THIS SCRIPT AN EXECUTABLE SCRIPT BY RUNNING: chmod +x env.vars.sh
 ## RUN THE SCRIPT BY RUNNING: . env.vars.sh or source env.vars.sh
 
-SUFIX=tst
-RSG=iot-bcdr-$SUFIX
-HUB=iot-hub-$SUFIX
+export SUFIX=bcdr
+export RSG=iot-$SUFIX
+export HUB=iot-$SUFIX-hub
+
 echo ">>>>>>>>>>>>>>>>>>>"
 echo "Setting environment variables for export - import device identities"
 echo "From iot-playground-devices-hub to the hub $HUB in the resource group $RSG"
