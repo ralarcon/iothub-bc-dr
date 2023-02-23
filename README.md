@@ -18,7 +18,7 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
 ## Environment Setup
 1. Scripts are designed to run in bash and assume you are logged in to run az cli commands (az login).
 2. Execute the `setup.env.sh` script to create the whole environment
-3. Build & Deploy IoT Device Simulator by running the `build-deploy.sh` script. You will need to introduce the vm password to copy the binaries.
+3. Build & Deploy IoT Device Simulator by running the `build-deploy.sh` script. You will need [.net SDK installed](https://learn.microsoft.com/dotnet/core/install/linux-ubuntu).
 4. Ensure the Internet traffic is blocked from the VM by running the device simulator: `~/iot-device-simulator$ ./run-simulator.sh`, it will not be able to connect.
 5. Close IoT HUB public access and configure IoT Hub Private Endpoints within the WE VNET.
     - Allow access to your IP for managing purposes.
@@ -34,7 +34,7 @@ Keep in mind to consider the devices as part of the important pieces for BC/DR
         - You can verify the hub is not receiving traffic by executing `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr`
         - **WARN** - TO BE INVESTIGATED-: THIS POINT IS NOT TRUE, NOT SURE WHY, I EXPECT THE MODULE CAN CONTINUE SENDING TO THE EDGE HUB AND THE EDGE HUB TO STORE THE MESSAGES WHILE NOT CONNECTIVITY
         - **Anyway** the module will reconnect after the failover (edgeAgent take care of it). 
-8. OPTIONAL: Verify the Temperature Sensor Module and IoT Simulated Device are sending data properly and the IoT Hub is receiving it (from your computer you can run `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr` ` az iot hub monitor-events --output table -d thermostat1 -n iot-bcdr-hub -g iot-bcdr`)
+8. OPTIONAL: Verify the Temperature Sensor Module and IoT Simulated Device are sending data properly and the IoT Hub is receiving it (from your computer you can run `az iot hub monitor-events --output table -d edge101 -n iot-bcdr-hub -g iot-bcdr` `az iot hub monitor-events --output table -d thermostat1 -n iot-bcdr-hub -g iot-bcdr`)
 
 ## TESTS
 1. Fail Over with only one PE attached to WE region
@@ -96,5 +96,4 @@ Error. Description = {"Message":"{\"errorCode\":401002,\"trackingId\":\"5a2bc7c4
 
 ## Remarks
 Be mindful this content is "under development" & "quick and dirty". 
-TODO: Generate a VM pass dynamically. Now is defined in the script. Not an issue as this are transient environments.
 WARN: The shell scripts use the environment variable export `SUFIX=bcdr` to create the resources. If you change it in one of the scripts, change it in all (`setup.env.sh build-deploy.sh and ./IotDeviceSimulator/env.vars.sh`)
