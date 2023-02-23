@@ -64,7 +64,7 @@ Pay special attention to the fact that to export the identities with authenticat
 ```
  var exportJob = JobProperties.CreateForExportJob(
                     _containerUri,
-                    **excludeKeysInExport: false**,
+                    excludeKeysInExport: false,
                     devicesBlobName);
                 exportJob.IncludeConfigurations = includeConfigurations;
                 exportJob.ConfigurationsBlobName = configsBlobName;
@@ -91,7 +91,7 @@ Export & Import
 ### Known Issue
 If you get an 401002 error trying to import the devices from other hub, be sure your IP is whitelisted in the the Network firewall of the destination IoT Hub. An errorm like follows:
 ```
-Error. Description = {"Message":"{\"errorCode\":**401002**,\"trackingId\":\"5a2bc7c4750f42f5aabefc0de1cd06cc-G:0-TimeStamp:02/23/2023 17:47:52\",\"message\":\"Unauthorized\",\"timestampUtc\":\"2023-02-23T17:47:52.4627397Z\"}","ExceptionMessage":""}
+Error. Description = {"Message":"{\"errorCode\":401002,\"trackingId\":\"5a2bc7c4750f42f5aabefc0de1cd06cc-G:0-TimeStamp:02/23/2023 17:47:52\",\"message\":\"Unauthorized\",\"timestampUtc\":\"2023-02-23T17:47:52.4627397Z\"}","ExceptionMessage":""}
 ```
 
 ## Remarks
