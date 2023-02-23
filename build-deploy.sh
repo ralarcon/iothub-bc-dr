@@ -5,11 +5,7 @@
 ## Ensure that the env.vars.sh script is executable by running: chmod +x env.vars.sh
 ## Run the script by running: ./build-deploy.sh 
 
-export SUFIX=bcdr
-export RSG=iot-$SUFIX
-export HUB=iot-$SUFIX-hub
-export VM_DNS_PREFIX='edgevm-'$SUFIX
-export SSH_KEY_NAME=iot_vm_rsa
+source ${BASH_SOURCE%/*}/variables.sh
 
 source ./IotDeviceSimulator/env.vars.sh
 
@@ -33,4 +29,4 @@ VM_FQDN=$(az vm show -d --resource-group $RSG --name $VM_NAME --query "fqdns" -o
 scp -P 2223 -i ~/.ssh/$SSH_KEY_NAME -pr ./IotDeviceSimulator/output/* azureUser@$VM_FQDN:/home/azureUser/iot-device-simulator
 
 echo "To run the simulator, run remotely the run-simulator.sh script with the following command:"
-echo "ssh -p 2223 -i ~/.ssh/$SSH_KEY_NAME azureUser@$VM_FQDN \"cd /home/azureUser/iot-device-simulator/;./run-simulator.sh\""
+echo 'ssh -p 2223 -i ~/.ssh/$SSH_KEY_NAME azureUser@$VM_FQDN "cd /home/azureUser/iot-device-simulator/;./run-simulator.sh"'
