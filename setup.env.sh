@@ -13,6 +13,8 @@ export VNET_WE=iot-$SUFIX-vnet-we
 export VNET_NE=iot-$SUFIX-vnet-ne
 export VM_DNS_PREFIX='edgevm-'$SUFIX
 
+export SSH_KEY_NAME=iot_vm_rsa
+
 echo "Preparing testing environment for BC/DR demo."
 echo "SUFIX=$SUFIX"
 echo "RSG=$RSG"
@@ -55,6 +57,13 @@ az iot hub device-identity connection-string show --device-id thermostat1 --hub-
 
 echo "Creating IoT Edge VM"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+if [ ! -f ~/.ssh/$SSH_KEY_NAME ]; then
+  ssh-keygen -f ~/.ssh/$SSH_KEY_NAME -t rsa -b 4096 -C "user@iot-vm"
+  echo "An SSH key has been generated at ~/.ssh/$SSH_KEY_NAME."
+else
+  echo "An SSH key already exists at ~/.ssh/$SSH_KEY_NAME."
+fi
+PUB_SSH_KEY=$(cat ~/.ssh/$SSH_KEY_NAME.pub)
 ## DEPLOY VM 
 az deployment group create \
 --resource-group $RSG \
@@ -62,8 +71,8 @@ az deployment group create \
 --parameters dnsLabelPrefix=$VM_DNS_PREFIX \
 --parameters adminUsername='azureUser' \
 --parameters deviceConnectionString=$(az iot hub device-identity connection-string show --device-id edge101 --hub-name $HUB --resource-group $RSG -o tsv) \
---parameters authenticationType='password' \
---parameters adminPasswordOrKey="vmPass#word"
+--parameters authenticationType='sshPublicKey' \
+--parameters adminPasswordOrKey="$PUB_SSH_KEY"
 
 echo "Wait for VM to boot"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
@@ -122,7 +131,7 @@ az acr import --resource-group $RSG --name $ACR --source mcr.microsoft.com/azure
 # - ENABLE PRIVATE LINK FOR WE
 # Ref: https://learn.microsoft.com/en-us/azure/iot-hub/iot-hub-public-network-access
 VM_FQDN=$(az vm show -d --resource-group $RSG --name $VM_NAME --query "fqdns" -o tsv)
-echo "To connect to the VM run: ssh -p 2223 azureUser@$VM_FQDN password: vmPass#word"
-echo "You will need to MANUALLY create the private endpoints in the WE VNET (and NE when required) for the IoT Hub"
+echo "To connect to the VM run: ssh -p 2223 azureUser@$VM_FQDN -i ~/.ssh/$SSH_KEY_NAME"
+echo "You will need to MANUALLY create the private endpoints (PE) in the WE VNET (and NE when required) for the IoT Hub"
 echo "ALSO you need to create the PE for the ACR"
 echo "You will need to configure the IoT Edge device (edge101) to deploy the TemperatureSensorModule from the market place"
