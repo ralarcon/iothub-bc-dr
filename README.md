@@ -87,6 +87,13 @@ Export & Import
 >[..] iothub-bc-dr/ImportExportIotDevices$ . env.vars.sh
 >[..] iothub-bc-dr/ImportExportIotDevices$ dotnet run --CopyDevices=true --IncludeConfigurations=true
 ```
+
+### Known Issue
+If you get an 401002 error trying to import the devices from other hub, be sure your IP is whitelisted in the the Network firewall of the destination IoT Hub. An errorm like follows:
+```
+Error. Description = {"Message":"{\"errorCode\":**401002**,\"trackingId\":\"5a2bc7c4750f42f5aabefc0de1cd06cc-G:0-TimeStamp:02/23/2023 17:47:52\",\"message\":\"Unauthorized\",\"timestampUtc\":\"2023-02-23T17:47:52.4627397Z\"}","ExceptionMessage":""}
+```
+
 ## Remarks
 Be mindful this content is "under development" & "quick and dirty". 
 TODO: Generate a VM pass dynamically. Now is defined in the script. Not an issue as this are transient environments.
