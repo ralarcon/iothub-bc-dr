@@ -7,7 +7,7 @@
 source ${BASH_SOURCE%/*}/variables.sh
 
 echo "Preparing testing environment for BC/DR demo."
-echo "SUFIX=$SUFIX"
+echo "SUFFIX=$SUFFIX"
 echo "RSG=$RSG"
 echo "RSG_NE=$RSG_NE"
 echo "HUB=$HUB"
@@ -113,7 +113,7 @@ az network vnet peering create --name vnet-onprem-to-vnet-ne --resource-group $R
 echo "Configuring Storage Account"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 ## SETUP STORAGE ACCOUNT
-az storage account create --name iotstg$SUFIX --resource-group $RSG --location westeurope --sku Standard_LRS --kind StorageV2
+az storage account create --name iotstg$SUFFIX --resource-group $RSG --location westeurope --sku Standard_LRS --kind StorageV2
 
 az acr create --resource-group $RSG --name $ACR --sku Premium --admin-enabled true
 az acr import --resource-group $RSG --name $ACR --source mcr.microsoft.com/azureiotedge-simulated-temperature-sensor:latest --image azureiotedge-simulated-temperature-sensor:latest --force
