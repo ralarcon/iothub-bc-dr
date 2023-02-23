@@ -96,4 +96,8 @@ Error. Description = {"Message":"{\"errorCode\":401002,\"trackingId\":\"5a2bc7c4
 
 ## Remarks
 Be mindful this content is "under development" & "quick and dirty". 
-WARN: The shell scripts use the environment variable export `SUFIX=bcdr` to create the resources. If you change it in one of the scripts, change it in all (`setup.env.sh build-deploy.sh and ./IotDeviceSimulator/env.vars.sh`)
+WARN: The shell scripts use the environment variable export `SUFIX=bcdr` to create the resources. This variable is defined in the `variables.sh` file and is referenced by all other scripts (`setup.env.sh`, `build-deploy.sh`, `./IotDeviceSimulator/env.vars.sh` and `./ImportExportIotDevices/env.vars.sh`). If you want to change the sufix with a random string use:
+
+```bash
+find . -type f -name '*.sh' -exec sed -i -e "s/export SUFIX=[a-zA-Z0-9]*/export SUFIX=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 4 | head -n 1)dr/g" {} \;
+```

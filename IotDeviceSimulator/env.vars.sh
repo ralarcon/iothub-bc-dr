@@ -1,12 +1,10 @@
 #!/bin/bash
 
-## ENSURE YOU SET THE CORRECT RSG and HUB
+## ENSURE YOU SET THE CORRECT RSG and HUB in ../variables.sh
 ## MAKE THIS SCRIPT AN EXECUTABLE SCRIPT BY RUNNING: chmod +x env.vars.sh
 ## RUN THE SCRIPT BY RUNNING: . env.vars.sh or source env.vars.sh
 
-export SUFIX=bcdr
-export RSG=iot-$SUFIX
-export HUB=iot-$SUFIX-hub
+source ${BASH_SOURCE%/*}/../variables.sh
 
 echo ">>>>>>>>>>>>>>>>>>>"
 echo "Setting environment variables for IoTDeviceSimulator"

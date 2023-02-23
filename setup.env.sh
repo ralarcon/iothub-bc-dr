@@ -4,16 +4,7 @@
 ## ENSURE YOU MAKE IT AN EXECUTABLE SCRIPT BY RUNNING: chmod +x setup.env.sh
 ## RUN THE SCRIPT BY RUNNING: . setup.env.sh or source setup.env.sh (if you want the env vars available in the current shell)
 
-export SUFIX=bcdr
-export RSG=iot-$SUFIX
-export RSG_NE=iot-$SUFIX-ne
-export HUB=iot-$SUFIX-hub
-export ACR=iotacr$SUFIX
-export VNET_WE=iot-$SUFIX-vnet-we
-export VNET_NE=iot-$SUFIX-vnet-ne
-export VM_DNS_PREFIX='edgevm-'$SUFIX
-
-export SSH_KEY_NAME=iot_vm_rsa
+source ${BASH_SOURCE%/*}/variables.sh
 
 echo "Preparing testing environment for BC/DR demo."
 echo "SUFIX=$SUFIX"
