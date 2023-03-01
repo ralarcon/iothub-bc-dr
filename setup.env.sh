@@ -4,7 +4,7 @@
 ## ENSURE YOU MAKE IT AN EXECUTABLE SCRIPT BY RUNNING: chmod +x setup.env.sh
 ## RUN THE SCRIPT BY RUNNING: . setup.env.sh or source setup.env.sh (if you want the env vars available in the current shell)
 
-source ${BASH_SOURCE%/*}/variables.sh
+source variables.sh
 
 echo "Preparing testing environment for BC/DR demo."
 echo "SUFFIX=$SUFFIX"
@@ -106,8 +106,11 @@ echo "Configuring VNET peering"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 VNET_WE_ID=$(az network vnet show -g $RSG -n $VNET_WE --query id -o tsv)
 VNET_NE_ID=$(az network vnet show -g $RSG_NE -n $VNET_NE --query id -o tsv)
+VNET_VM_ID=$(az network vnet show -g $RSG -n $VNET_VM --query id -o tsv)
 az network vnet peering create --name vnet-onprem-to-vnet-we --resource-group $RSG --vnet-name $VNET_VM --remote-vnet $VNET_WE_ID --allow-vnet-access
 az network vnet peering create --name vnet-onprem-to-vnet-ne --resource-group $RSG --vnet-name $VNET_VM --remote-vnet $VNET_NE_ID --allow-vnet-access
+az network vnet peering create --name vnet-we-to-vnet-onprem --resource-group $RSG --vnet-name $VNET_WE --remote-vnet $VNET_VM_ID --allow-vnet-access
+az network vnet peering create --name vnet-ne-to-vnet-onprem --resource-group $RSG --vnet-name $VNET_NE --remote-vnet $VNET_VM_ID --allow-vnet-access
 
 
 echo "Configuring Storage Account"

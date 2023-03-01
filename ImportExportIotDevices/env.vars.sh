@@ -4,7 +4,7 @@
 ## MAKE THIS SCRIPT AN EXECUTABLE SCRIPT BY RUNNING: chmod +x env.vars.sh
 ## RUN THE SCRIPT BY RUNNING: . env.vars.sh or source env.vars.sh
 
-source ${BASH_SOURCE%/*}/../variables.sh
+source ../variables.sh
 
 echo ">>>>>>>>>>>>>>>>>>>"
 echo "Setting environment variables for export - import device identities"
